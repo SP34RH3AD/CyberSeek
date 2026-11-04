@@ -38,9 +38,7 @@ It is designed to **support investigation and prioritization**. It is not an exp
 - **Exports** — JSON and HTML reports per task, plus dedicated IoC exports where the module supports them.
 - **MITRE ATT&CK mapping** where the evidence supports it.
 - **Optional AI SOC summaries** (OpenAI, xAI Grok, Anthropic Claude, or Google Gemini) that are evidence-bound and always fall back to a local summary.
-- **Safe by design** — SSRF protections, a sandboxed email preview, non-executing file analysis, CSRF protection, a strict content-security policy, optional TOTP two-factor authentication, and no third-party code loaded in the browser.
-- **Light and dark themes**, follows the operating-system preference, and adapts to mobile screens.
-
+  
 ---
 
 ## How the workspace works
@@ -276,29 +274,6 @@ Set a long, persistent `SECRET_KEY` for any non-local deployment (if it is unset
 ### Source API keys
 
 Configure these in the **Source APIs** admin view (see the table above). They are stored in `config.ini`. Keep `config.ini` and `.env` out of source control (they are git-ignored).
-
----
-
-## Data, privacy & retention
-
-- Task metadata, local correlations, source results, analyst notes, and user accounts live in `instance/cyberseek.db`.
-- Uploaded samples are stored under `uploads/` **without execute permissions**; Live URL screenshots under `instance/live_url_captures/`.
-- An external dynamic sandbox receives a file **only** when the analyst explicitly selects Dynamic analysis and a provider. Reputation, Live URL, and Email-exposure likewise send the submitted indicator to the selected external service — submitting an indicator discloses it to that service.
-- Two-factor secrets are encrypted at rest; keep `instance/.two_factor.key` with the local application data.
-- Set `UPLOAD_RETENTION_DAYS` to purge old samples automatically.
-
----
-
-## Security controls
-
-- **Authentication:** mandatory login; a default `admin` / `arasaka` bootstrap account that must change its password on first use. Change it immediately, and prefer a non-default password on any shared deployment.
-- **Two-factor (optional):** per-user TOTP with a QR setup flow compatible with standard authenticator apps; enabled accounts require a six-digit code after the password.
-- **Authorization:** administrators control account creation; analysts cannot reach admin views; every task respects its owner's privacy setting.
-- **Brute-force protection:** repeated failed sign-ins quarantine the source IP, with an increasing interval for repeat offenders.
-- **CSRF protection** on all state-changing forms, with a constant-time token check.
-- **Content-Security-Policy** with a per-request nonce; fonts and JavaScript libraries are served locally, so pages load **no third-party code** (map tiles are the only external resource). Plus `X-Content-Type-Options`, `Referrer-Policy`, `frame-ancestors 'none'`, and HSTS over HTTPS.
-- **SSRF defense:** reconnaissance and analysis modules reject private, loopback, link-local, and reserved destinations; Live URL additionally pins the connection to the resolved public IP and re-validates redirects.
-- **Safe content handling:** the email preview is sanitized (scripts, styles, remote images/pixels, and frames removed) and rendered in a sandboxed, escaped frame; uploaded files are never executed by the local scanner; archives are read with zip-slip and decompression-size protections.
 
 ---
 
