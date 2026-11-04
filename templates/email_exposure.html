@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import task_history, task_card with context %}
+{% block title %}Email Exposure · Cyberseek{% endblock %}
+{% block content %}
+<div class="page-intro"><p class="eyebrow">MONITORING</p><h1>Email exposure</h1><p class="page-lead">Check one authorized email address against known breach data and see which years it has appeared in.</p></div>
+<p class="section-label">New exposure check</p>
+<section class="recon-panel"><form method="post" class="whois-form"><label class="field-primary">Email address<span class="field-input-wrap"><svg class="field-icon" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1.5" y="3.5" width="13" height="9" rx="1"/><path d="M1.8 4l6.2 5 6.2-5"/></svg><input name="email" type="email" value="{{ requested_email }}" placeholder="analyst@example.com" autocomplete="email" required autofocus></span></label><p class="external-notice">Checks one email address against known breach data. Domain-wide and password checks are not available in this module.</p><label class="task-privacy"><input type="checkbox" name="is_private" value="1"><span>Keep this task private</span></label><button class="primary">Check email exposure</button></form></section>
+{% call(task) task_history(history, 'email_exposure', placeholder='Email or owner', empty_text='No email exposure tasks yet.', empty_hint='Check an email address above to see it here.') %}{% call task_card(task, 'email_exposure', task['email'], None, 'delete_email_exposure') %}{% endcall %}{% endcall %}
+
+{% endblock %}

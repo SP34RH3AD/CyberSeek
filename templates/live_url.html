@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import task_history, task_card with context %}
+{% block title %}Live URL Analysis · Cyberseek{% endblock %}
+{% block content %}
+<div class="page-intro"><p class="eyebrow">ANALYSIS</p><h1>Live URL analysis</h1><p class="page-lead">Render a public URL in a disposable browser to capture its behavior, resources, screenshot, and security posture.</p></div>
+<p class="section-label">New URL analysis</p>
+<section class="recon-panel live-url-panel">
+  <form method="post" class="live-url-form">
+    <label class="field-primary">Public URL<span class="field-input-wrap"><svg class="field-icon" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6.2"/><path d="M1.8 8h12.4M8 1.8c1.7 1.7 2.6 4 2.6 6.2s-.9 4.5-2.6 6.2c-1.7-1.7-2.6-4-2.6-6.2s.9-4.5 2.6-6.2Z"/></svg><input name="target" type="url" value="{{ requested_target|default('', true) }}" placeholder="https://example.com/path" required autofocus></span></label>
+    <p class="form-section-label">Options</p><label class="user-agent-choice">Browser user agent<select name="user_agent">{% for key, profile in user_agents.items() %}<option value="{{ key }}" {% if key == 'firefox' %}selected{% endif %}>{{ profile['label'] }}</option>{% endfor %}</select></label>
+    <p class="external-notice">HTTP Document Inspector extracts declared resources and interaction points. The optional open-source Playwright Chromium engine renders the page, records browser activity, and captures a screenshot. Private, local, and non-public destinations are blocked.</p>
+    <label class="task-privacy"><input type="checkbox" name="is_private" value="1"><span>Keep this task private</span></label>
+    <button class="primary">Run live URL analysis</button>
+  </form>
+</section>
+{% call(task) task_history(history, 'live_url', placeholder='URL or owner', empty_text='No live URL analyses yet.', empty_hint='Analyze a URL above to see it here.') %}{% call task_card(task, 'live_url', task['target'], 'export_live_url_analysis', 'delete_live_url_analysis') %}<div><dt>User agent</dt><dd>{{ task['user_agent']|default('firefox', true)|title }}</dd></div>{% endcall %}{% endcall %}
+
+{% endblock %}

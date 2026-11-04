@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import task_history, task_card with context %}
+{% block title %}DNS query · Cyberseek{% endblock %}
+{% block content %}
+<div class="page-intro"><p class="eyebrow">RECONNAISSANCE</p><h1>DNS query</h1><p class="page-lead">Resolve a domain or IP against public DNS records — A, AAAA, TXT, NS, CNAME, PTR, MX, SOA, DS, or all of them.</p></div>
+<p class="section-label">New DNS query</p>
+<section class="recon-panel">
+  <form method="post" class="dns-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field-primary">Domain or IP<span class="field-input-wrap"><svg class="field-icon" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="3" r="1.6"/><circle cx="3" cy="13" r="1.6"/><circle cx="13" cy="13" r="1.6"/><path d="M8 4.6V9M8 9 3.7 11.7M8 9l4.3 2.7"/></svg><input name="domain" value="{{ requested_domain }}" placeholder="example.com" required autofocus></span></label>
+    <p class="form-section-label">Query options</p><fieldset><legend>Record type</legend><div class="record-radios">{% for type in ['A','AAAA','TXT','NS','CNAME','PTR','MX','SOA','DS','ALL'] %}<label><input type="radio" name="record_type" value="{{ type }}" {% if type == requested_record_type %}checked{% endif %}><span>{{ type }}</span></label>{% endfor %}</div></fieldset>
+    <label class="task-privacy"><input type="checkbox" name="is_private" value="1"><span>Keep this task private</span></label>
+    <button class="primary">Run query</button>
+  </form>
+</section>
+{% call(task) task_history(history, 'dns', placeholder='Target or owner', empty_text='No DNS tasks yet.', empty_hint='Run a query above to see it here.') %}{% call task_card(task, 'dns', task['domain'], 'export_dns_task', 'delete_dns_task') %}<div><dt>Type</dt><dd>{{ task['record_type'] }}</dd></div>{% endcall %}{% endcall %}
+
+{% endblock %}

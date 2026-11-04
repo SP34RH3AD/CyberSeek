@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import task_history, task_card with context %}
+{% block title %}WHOIS lookup · Cyberseek{% endblock %}
+{% block content %}
+<div class="page-intro"><p class="eyebrow">RECONNAISSANCE</p><h1>WHOIS lookup</h1><p class="page-lead">Look up registrar, registration dates, nameservers, and ownership details for a public domain, hostname, or IP.</p></div>
+<p class="section-label">New WHOIS lookup</p>
+<section class="recon-panel"><form method="post" class="whois-form"><label class="field-primary">Domain, hostname, or public IP<span class="field-input-wrap"><svg class="field-icon" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="3" r="1.6"/><circle cx="3" cy="13" r="1.6"/><circle cx="13" cy="13" r="1.6"/><path d="M8 4.6V9M8 9 3.7 11.7M8 9l4.3 2.7"/></svg><input name="target" value="{{ requested_target }}" placeholder="example.com, host.example.com, or 8.8.8.8" required autofocus></span></label><label class="task-privacy"><input type="checkbox" name="is_private" value="1"><span>Keep this task private</span></label><button class="primary">Run WHOIS</button></form></section>
+{% call(task) task_history(history, 'whois', placeholder='Target or owner', empty_text='No WHOIS tasks yet.', empty_hint='Look up a domain or IP above to see it here.') %}{% call task_card(task, 'whois', task['target'], 'export_whois_task', 'delete_whois_task') %}{% endcall %}{% endcall %}
+
+{% endblock %}

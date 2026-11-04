@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import task_history, task_card with context %}
+{% block title %}Reputation Lookup · Cyberseek{% endblock %}
+{% block content %}
+<div class="page-intro"><p class="eyebrow">ANALYSIS</p><h1>Reputation lookup</h1><p class="page-lead">Check a hostname, domain, IP, URL, or file hash against one or more reputation sources and correlate the results.</p></div>
+<p class="section-label">New reputation lookup</p>
+<section class="recon-panel">
+  <form method="post" class="reputation-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field-primary">Indicator<span class="field-input-wrap"><svg class="field-icon" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="4.3"/><path d="M10.1 10.1 14 14"/></svg><input name="target" value="{{ requested_target|default('', true) }}" placeholder="URL, hostname, domain, public IP, or hash" required autofocus></span></label>
+    <p class="form-section-label">Sources</p><fieldset><legend>Reputation sources</legend><div class="record-radios reputation-engine-radios"><label><input id="all-engines" type="checkbox" name="engines" value="all" checked><span>ALL</span></label>{% for key,label in engines.items() %}<label><input class="engine-choice" type="checkbox" name="engines" value="{{ key }}"><span>{{ label }}</span></label>{% endfor %}</div></fieldset>
+    <p class="external-notice">Choose one, several, or all sources. Selected external sources receive the submitted indicator. API keys are required for VirusTotal and Kaspersky OpenTIP; Cisco Talos opens its public reputation lookup.</p>
+    <label class="task-privacy"><input type="checkbox" name="is_private" value="1"><span>Keep this task private</span></label>
+    <button class="primary">Run reputation lookup</button>
+  </form>
+</section>
+{% call(task) task_history(history, 'reputation', placeholder='Indicator or owner', empty_text='No reputation lookups yet.', empty_hint='Look up an indicator above to see it here.') %}{% call task_card(task, 'reputation', task['target'], 'export_reputation_lookup', 'delete_reputation_lookup') %}<div><dt>Engines</dt><dd>{% if task['engine'] == 'all' %}All engines{% else %}{% set active = task['engine'].split(',')|reject('equalto', 'urlscan')|list %}{% for key in active %}{{ engines.get(key, key) }}{{ ', ' if not loop.last }}{% else %}Retired source{% endfor %}{% endif %}</dd></div>{% endcall %}{% endcall %}
+<script nonce="{{ csp_nonce() }}">const allEngines=document.querySelector('#all-engines'),engineChoices=[...document.querySelectorAll('.engine-choice')];allEngines?.addEventListener('change',()=>{if(allEngines.checked)engineChoices.forEach(input=>input.checked=false)});engineChoices.forEach(input=>input.addEventListener('change',()=>{if(input.checked)allEngines.checked=false}));</script>
+{% endblock %}
